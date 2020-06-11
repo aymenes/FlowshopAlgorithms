@@ -3,10 +3,10 @@ from time import time
 from makespan import makespan
 import data as dataReader
 
-def genetic(data):
-    population_size = 100
-    taux_mutation = 0.1
-    iterations = 100
+def genetic(data, taille_population = 100, taux_mut = 0.1, nIterations = 100):
+    population_size = taille_population
+    taux_mutation = taux_mut
+    iterations = nIterations
     job_count = len(data[0])
     print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
@@ -82,20 +82,27 @@ def pmx(a, b):
 path = './data/ta20_5.txt'
 matrice = dataReader.read(path, 5)
 start = time()
-print(genetic(matrice))
+result = genetic(matrice, 100, 0.1, 100)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
 end = time()
-print(end - start)
+print('  Temps d\'execution : {:.6}s'.format(end - start))
 
 path = './data/ta20_10.txt'
 matrice = dataReader.read(path, 10)
 start = time()
-print(genetic(matrice))
+result = genetic(matrice, 100, 0.1, 100)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
 end = time()
-print(end - start)
+print('  Temps d\'execution : {:.6}s'.format(end - start))
 
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 start = time()
-print(genetic(matrice))
+result = genetic(matrice, 100, 0.1, 100)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
 end = time()
-print(end - start)
+print('  Temps d\'execution : {:.6}s'.format(end - start))
+
