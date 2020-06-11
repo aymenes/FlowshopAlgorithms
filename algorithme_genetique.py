@@ -6,7 +6,8 @@ def genetic(data):
     population_size = 100
     taux_mutation = 0.1
     iterations = 100
-    job_count = len(data)
+    #job_count = len(data)
+    job_count = len(data[0])
     print('job_count = {}'.format(job_count))
 
     # Generer une les individus de la population aleatoirement
@@ -14,14 +15,16 @@ def genetic(data):
 
     for individu in population:
         print('{} : {}'.format(individu, makespan(individu, data)))
-        
     population_avec_qualite = evaluer_qualite(population, data)    
+    print(population_avec_qualite)
+    """
     for _ in range(0, iterations):
         parents = choisir_parents(population_avec_qualite)
         enfants = breed(parents)
         muter(enfants, taux_mutation)
         population_avec_qualite = merge(population_avec_qualite, evaluer_qualite(enfants, data))
     return choisir_meilleur(population_avec_qualite)[0]
+    """
 
 def evaluer_qualite(population, data):
     return [(individual, makespan(individual, data)) for individual in population]
