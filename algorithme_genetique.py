@@ -7,15 +7,12 @@ def genetic(data):
     population_size = 100
     taux_mutation = 0.1
     iterations = 100
-    #job_count = len(data)
     job_count = len(data[0])
     print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
     # Generer une les individus de la population aleatoirement
     population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
 
-    #for individu in population:
-    #    print('{} : {}'.format(individu, makespan(individu, data)))
     population_avec_qualite = evaluer_qualite(population, data)    
 
     for _ in range(0, iterations):
@@ -81,24 +78,16 @@ def pmx(a, b):
     
     return [enfant1, enfant2]     
     
-data = [[54, 83, 15, 71, 77, 36, 53, 38, 27, 87, 76, 91, 14, 29, 12, 77, 32, 87, 68, 94],
- [79,  3, 11, 99, 56, 70, 99, 60,  5, 56,  3, 61, 73, 75, 47, 14, 21, 86,  5, 77],
- [16, 89, 49, 15, 89, 45, 60, 23, 57, 64,  7,  1, 63, 41, 63, 47, 26, 75, 77, 40],
- [66, 58, 31, 68, 78, 91, 13, 59, 49, 85, 85,  9, 39, 41, 56, 40, 54, 77, 51, 31],
- [58, 56, 20, 85, 53, 35, 53, 41, 69, 13, 86, 72,  8, 49, 47, 87, 58, 18, 68, 28]]
 
-path = './data/ta20_10.txt'
-matrice = dataReader.read(path, 10)
-
+path = './data/ta20_5.txt'
+matrice = dataReader.read(path, 5)
 start = time()
 print(genetic(matrice))
 end = time()
 print(end - start)
 
-
-path = './data/ta20_5.txt'
-matrice = dataReader.read(path, 5)
-
+path = './data/ta20_10.txt'
+matrice = dataReader.read(path, 10)
 start = time()
 print(genetic(matrice))
 end = time()
@@ -106,7 +95,6 @@ print(end - start)
 
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
-
 start = time()
 print(genetic(matrice))
 end = time()
