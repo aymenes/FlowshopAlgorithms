@@ -17,9 +17,9 @@ def genetic(data, taille_population = 100, taux_mut = 0.1, nIterations = 100):
 
     for _ in range(0, iterations):
         parents = choisir_parents(population_avec_qualite)
-        enfants = breed(parents)
-        muter(enfants, taux_mutation)
-        population_avec_qualite = merge(population_avec_qualite, evaluer_qualite(enfants, data))
+        enfants = croisement(parents)
+        mutation(enfants, taux_mutation)
+        population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
     return choisir_meilleur(population_avec_qualite)
 
 def evaluer_qualite(population, data):
@@ -33,14 +33,14 @@ def choisir_parents(population):
         parents.append(choisir_meilleur(echantillon))
     return parents
 
-def breed(parents):
+def croisement(parents):
     shuffle(parents)
     enfants = []
     for i in range(1, len(parents), 2):
-        enfants += pmx(parents[i - 1][0], parents[i][0])
+        enfants += merge(parents[i - 1][0], parents[i][0])
     return enfants
 
-def muter(enfants, taux_mutation):
+def mutation(enfants, taux_mutation):
     for enfant in enfants:
         if random() <= taux_mutation:
             left = randrange(0, len(enfant))
@@ -50,7 +50,7 @@ def muter(enfants, taux_mutation):
             enfant[left] = enfant[right]
             enfant[right] = tmp   
 
-def merge(parents, enfants):
+def union(parents, enfants):
     both = parents + enfants
     both.sort(key=lambda x: x[1])
     return both[:len(parents)]
@@ -63,7 +63,7 @@ def translate(x, d):
         x = d[x]
     return x
 
-def pmx(a, b):
+def merge(a, b):
     length = len(a)
     left = randrange(0, length + 1)
     right = randrange(left, length + 1)
