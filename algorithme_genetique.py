@@ -1,6 +1,7 @@
 from random import shuffle, randrange, sample, random
+from time import time
 from makespan import makespan
-import data
+import data as dataReader
 
 def genetic(data):
     population_size = 100
@@ -8,23 +9,21 @@ def genetic(data):
     iterations = 100
     #job_count = len(data)
     job_count = len(data[0])
-    print('job_count = {}'.format(job_count))
+    print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
     # Generer une les individus de la population aleatoirement
     population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
 
-    for individu in population:
-        print('{} : {}'.format(individu, makespan(individu, data)))
+    #for individu in population:
+    #    print('{} : {}'.format(individu, makespan(individu, data)))
     population_avec_qualite = evaluer_qualite(population, data)    
-    print(population_avec_qualite)
-    """
+
     for _ in range(0, iterations):
         parents = choisir_parents(population_avec_qualite)
         enfants = breed(parents)
         muter(enfants, taux_mutation)
         population_avec_qualite = merge(population_avec_qualite, evaluer_qualite(enfants, data))
-    return choisir_meilleur(population_avec_qualite)[0]
-    """
+    return choisir_meilleur(population_avec_qualite)
 
 def evaluer_qualite(population, data):
     return [(individual, makespan(individual, data)) for individual in population]
@@ -88,4 +87,27 @@ data = [[54, 83, 15, 71, 77, 36, 53, 38, 27, 87, 76, 91, 14, 29, 12, 77, 32, 87,
  [66, 58, 31, 68, 78, 91, 13, 59, 49, 85, 85,  9, 39, 41, 56, 40, 54, 77, 51, 31],
  [58, 56, 20, 85, 53, 35, 53, 41, 69, 13, 86, 72,  8, 49, 47, 87, 58, 18, 68, 28]]
 
-genetic(data)
+path = './data/ta20_10.txt'
+matrice = dataReader.read(path, 10)
+
+start = time()
+print(genetic(matrice))
+end = time()
+print(end - start)
+
+
+path = './data/ta20_5.txt'
+matrice = dataReader.read(path, 5)
+
+start = time()
+print(genetic(matrice))
+end = time()
+print(end - start)
+
+path = './data/ta20_20.txt'
+matrice = dataReader.read(path, 20)
+
+start = time()
+print(genetic(matrice))
+end = time()
+print(end - start)
