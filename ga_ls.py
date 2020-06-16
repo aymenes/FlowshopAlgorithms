@@ -3,7 +3,7 @@ from time import time
 from makespan import makespan
 import data as dataReader
 
-def genetic(data, taille_population = 100, taux_mut = 0.1, nIterations = 100):
+def genetic2(data, taille_population = 100, taux_mut = 0.1, nIterations = 100, limit = 2347):
     population_size = taille_population
     taux_mutation = taux_mut
     iterations = nIterations
@@ -17,8 +17,10 @@ def genetic(data, taille_population = 100, taux_mut = 0.1, nIterations = 100):
 
     for _ in range(0, iterations):
         parents = choisir_parents(population_avec_qualite)
+        #print(parents[0])
         enfants = croisement(parents)
-        mutation(enfants, taux_mutation)
+        
+        mutation(enfants, taux_mutation, data)
         population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
     return choisir_meilleur(population_avec_qualite)
 
@@ -28,8 +30,10 @@ def evaluer_qualite(population, data):
 def choisir_parents(population):
     parents = []
     for _ in range(0, len(population)):
-        # Prendre un echantillon aleatoire
+        # Prendre un echantillon aleatoire de 5 individus
         echantillon = sample(population, 5)
+
+        # Choisir le meilleur des 5
         parents.append(choisir_meilleur(echantillon))
     return parents
 
@@ -40,15 +44,47 @@ def croisement(parents):
         enfants += merge(parents[i - 1][0], parents[i][0])
     return enfants
 
-def mutation(enfants, taux_mutation):
-    for enfant in enfants:
-        if random() <= taux_mutation:
+def mutation(enfants, taux_mutation, data):
+    for i in range(len(enfants)):
+        enfant = enfants[i]
+        qualiteEnfant = makespan(enfant, data)
+        enfantTmp = enfant
+        for _ in range(5):
+            left = randrange(0, len(enfantTmp))
+            right = randrange(left, len(enfantTmp))
+            tmp = enfantTmp[left]
+            enfantTmp[left] = enfantTmp[right]
+            enfantTmp[right] = tmp
+
+        qualiteEnfant2 = makespan(enfantTmp, data)
+        if(qualiteEnfant2 < qualiteEnfant):
+            enfants[i] = enfantTmp
+            print('old : {} makespan = {}'.format(enfant, qualiteEnfant))
+            print('new : {} makespan = {}'.format(enfantTmp, qualiteEnfant2))
+            print()
+
+            '''
+            if random() <= taux_mutation:
             left = randrange(0, len(enfant))
             right = randrange(left, len(enfant))
            
             tmp = enfant[left]
             enfant[left] = enfant[right]
             enfant[right] = tmp   
+            '''
+
+def mutationAvancee(enfants, taux_mutation):
+    for enfant in enfants:
+
+        if random() <= taux_mutation:
+            print(enfant)
+            left = randrange(0, len(enfant))
+            right = randrange(left, len(enfant))
+           
+            tmp = enfant[left]
+            enfant[left] = enfant[right]
+            enfant[right] = tmp
+            print(enfant)
 
 def union(parents, enfants):
     both = parents + enfants
@@ -78,18 +114,15 @@ def merge(a, b):
     
     return [enfant1, enfant2]
 
-
-
-path = './data/ta20_20.txt'
-matrice = dataReader.read(path, 20)
+'''
+path = './data/ta20_5.txt'
+matrice = dataReader.read(path, 5)
 start = time()
-result = genetic(matrice, 100, 0.1, 150)
+result = genetic(matrice, 100, 0.1, 100)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
-
-'''
 
 path = './data/ta20_10.txt'
 matrice = dataReader.read(path, 10)
@@ -99,14 +132,13 @@ print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
-
+'''
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 start = time()
-result = genetic(matrice, 100, 0.1, 100)
+result = genetic2(matrice, 100, 0.1, 100, limit=2347)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
 
-'''
