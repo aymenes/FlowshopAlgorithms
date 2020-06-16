@@ -3,7 +3,7 @@ from time import time
 from makespan import makespan
 import data as dataReader
 
-def genetic2(data, taille_population = 100, taux_mut = 0.1, nIterations = 100, limit = 2347):
+def genetic1(data, taille_population = 100, taux_mut = 0.1, nIterations = 100, limit = 99999):
     population_size = taille_population
     taux_mutation = taux_mut
     iterations = nIterations
@@ -15,14 +15,54 @@ def genetic2(data, taille_population = 100, taux_mut = 0.1, nIterations = 100, l
 
     population_avec_qualite = evaluer_qualite(population, data)    
 
-    for _ in range(0, iterations):
+    score = 9999999
+    compteur = 0
+    while score > limit:
+        compteur += 1
+        parents = choisir_parents(population_avec_qualite)
+        enfants = croisement(parents)
+        mutation(enfants, taux_mutation)
+        population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
+        meilleurIndividu = choisir_meilleur(population_avec_qualite)
+
+        if meilleurIndividu[1] < score:
+            score = meilleurIndividu[1]
+            print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+    print(compteur)
+    return meilleurIndividu
+
+def genetic2(data, taille_population = 100, taux_mut = 0.1, nIterations = 100, limit = 99999):
+    population_size = taille_population
+    taux_mutation = taux_mut
+    iterations = nIterations
+    job_count = len(data[0])
+    print('jobs = {}   machines = {} '.format(job_count, len(data)))
+
+    # Generer une les individus de la population aleatoirement
+    population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
+    population_avec_qualite = evaluer_qualite(population, data)    
+
+    score = 9999999
+    compteur = 0
+    while score > limit:
+        compteur += 1
         parents = choisir_parents(population_avec_qualite)
         #print(parents[0])
         enfants = croisement(parents)
         
-        mutation(enfants, taux_mutation, data)
+        mutationAvancee(enfants, taux_mutation, data)
         population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
-    return choisir_meilleur(population_avec_qualite)
+        meilleurIndividu = choisir_meilleur(population_avec_qualite)
+
+        if meilleurIndividu[1] < score:
+            score = meilleurIndividu[1]
+            print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+    print(compteur)
+    return meilleurIndividu
+
+    #for _ in range(0, iterations):
+        
+    #return choisir_meilleur(population_avec_qualite)
 
 def evaluer_qualite(population, data):
     return [(individual, makespan(individual, data)) for individual in population]
@@ -44,7 +84,20 @@ def croisement(parents):
         enfants += merge(parents[i - 1][0], parents[i][0])
     return enfants
 
-def mutation(enfants, taux_mutation, data):
+def mutation(enfants, taux_mutation):
+    for i in range(len(enfants)):
+        enfant = enfants[i]
+        if random() <= taux_mutation:
+            left = randrange(0, len(enfant))
+            right = randrange(left, len(enfant))
+           
+            tmp = enfant[left]
+            enfant[left] = enfant[right]
+            enfant[right] = tmp
+
+            enfants[i] = enfant
+
+def mutationAvancee(enfants, taux_mutation, data):
     for i in range(len(enfants)):
         enfant = enfants[i]
         qualiteEnfant = makespan(enfant, data)
@@ -59,32 +112,6 @@ def mutation(enfants, taux_mutation, data):
         qualiteEnfant2 = makespan(enfantTmp, data)
         if(qualiteEnfant2 < qualiteEnfant):
             enfants[i] = enfantTmp
-            print('old : {} makespan = {}'.format(enfant, qualiteEnfant))
-            print('new : {} makespan = {}'.format(enfantTmp, qualiteEnfant2))
-            print()
-
-            '''
-            if random() <= taux_mutation:
-            left = randrange(0, len(enfant))
-            right = randrange(left, len(enfant))
-           
-            tmp = enfant[left]
-            enfant[left] = enfant[right]
-            enfant[right] = tmp   
-            '''
-
-def mutationAvancee(enfants, taux_mutation):
-    for enfant in enfants:
-
-        if random() <= taux_mutation:
-            print(enfant)
-            left = randrange(0, len(enfant))
-            right = randrange(left, len(enfant))
-           
-            tmp = enfant[left]
-            enfant[left] = enfant[right]
-            enfant[right] = tmp
-            print(enfant)
 
 def union(parents, enfants):
     both = parents + enfants
@@ -136,7 +163,16 @@ print('  Temps d\'execution : {:.6}s'.format(end - start))
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 start = time()
-result = genetic2(matrice, 100, 0.1, 100, limit=2347)
+result = genetic2(matrice, 100, 0.3, 100, limit=2400)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
+end = time()
+print('  Temps d\'execution : {:.6}s'.format(end - start))
+
+path = './data/ta20_20.txt'
+matrice = dataReader.read(path, 20)
+start = time()
+result = genetic1(matrice, 100, 0.3, 100, limit=2400)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
