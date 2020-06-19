@@ -2,6 +2,11 @@ from random import shuffle, randrange, sample, random
 from time import time
 from makespan import makespan
 import data as dataReader
+import matplotlib.pyplot as plt
+
+# Stat
+x = [] # generation
+y = [] # makespan
 
 def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
     population_size = taille_population
@@ -9,10 +14,6 @@ def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, m
     job_count = len(data[0])
     print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
-    
-    #population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
-
-    #population_avec_qualite = evaluer_qualite(population, data)    
     population_avec_qualite = evaluer_qualite(populationInitiale, data)
 
     score = 9999999
@@ -22,6 +23,7 @@ def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, m
     individuRepete = []
     while repetitionSolution <= 20 and iteration < maxIterations:
         iteration += 1
+
         parents = choisir_parents(population_avec_qualite)
         enfants = croisement(parents)
         mutation(enfants, taux_mutation)
@@ -36,7 +38,9 @@ def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, m
         else:
             repetitionSolution = 0
             individuRepete = meilleurIndividu[0]
-            print(' new best')
+
+        x.append(iteration)
+        y.append(score)
     print(iteration)
     return meilleurIndividu
 
@@ -60,14 +64,16 @@ def croisement(parents):
     return enfants
 
 def mutation(enfants, taux_mutation):
-    for enfant in enfants:
+    for i in range(len(enfants)):
+        enfant = enfants[i]
         if random() <= taux_mutation:
             left = randrange(0, len(enfant))
             right = randrange(left, len(enfant))
            
             tmp = enfant[left]
             enfant[left] = enfant[right]
-            enfant[right] = tmp   
+            enfant[right] = tmp
+            enfants[i] = enfant 
 
 def union(parents, enfants):
     both = parents + enfants
@@ -108,40 +114,16 @@ job_count = 20
 initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
 
 start = time()
-result = genetic(matrice, initPop, 100, 0.3, 200, limit=2400)
-print('  Ordre : {}'.format(result[0]))
-print('  Makespan : {}'.format(result[1]))
-end = time()
-print('  Temps d\'execution : {:.6}s'.format(end - start))
-'''
-path = './data/ta20_20.txt'
-matrice = dataReader.read(path, 20)
-start = time()
-result = genetic(matrice, 100, 0.1, 150)
-print('  Ordre : {}'.format(result[0]))
-print('  Makespan : {}'.format(result[1]))
-end = time()
-print('  Temps d\'execution : {:.6}s'.format(end - start))
-'''
-
-'''
-
-path = './data/ta20_10.txt'
-matrice = dataReader.read(path, 10)
-start = time()
-result = genetic(matrice, 100, 0.1, 100)
+result = genetic(matrice, initPop, 100, 0.1, 200, limit=2400)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
 
-path = './data/ta20_20.txt'
-matrice = dataReader.read(path, 20)
-start = time()
-result = genetic(matrice, 100, 0.1, 100)
-print('  Ordre : {}'.format(result[0]))
-print('  Makespan : {}'.format(result[1]))
-end = time()
-print('  Temps d\'execution : {:.6}s'.format(end - start))
-
-'''
+print('Generation,Makespan')
+for i in range(len(x)):
+    print('{},{}'.format(x[i], y[i]))
+plt.plot(x,y)
+plt.xlabel('Generation')
+plt.ylabel('Makespan')
+plt.show()
