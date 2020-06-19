@@ -130,7 +130,7 @@ def merge(a, b):
     
     return [enfant1, enfant2]
 
-
+'''
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 
@@ -149,6 +149,7 @@ print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
 '''
+'''
 print('Generation,Makespan')
 for i in range(len(x)):
     print('{},{}'.format(x[i], y[i]))
@@ -156,6 +157,7 @@ plt.plot(x,y)
 plt.xlabel('Generation')
 plt.ylabel('Makespan')
 plt.show()
+'''
 '''
 
 
@@ -165,3 +167,4 @@ print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
+'''

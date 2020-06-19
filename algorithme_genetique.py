@@ -103,7 +103,7 @@ def merge(a, b):
     
     return [enfant1, enfant2]
 
-
+'''
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 
@@ -127,3 +127,4 @@ plt.plot(x,y)
 plt.xlabel('Generation')
 plt.ylabel('Makespan')
 plt.show()
+'''

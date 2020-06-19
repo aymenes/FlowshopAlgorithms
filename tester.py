@@ -1,30 +1,44 @@
-import algorithme_genetique
+from algorithme_genetique import genetic
+from algo_genetique_recherche_locale import genetic_rt
+#import algorithme_genetique, algo_genetique_recherche_locale
 import data as dataReader
-from time import time
 import matplotlib.pyplot as plt
+from random import shuffle, randrange, sample, random
+from time import time
+from makespan import makespan
 
-def varier_iteration():
-	x = []
-	y = []
-	population = 100
-	for iteration in range(1, 201, 10):
-		x.append(iteration)
-		start = time()
-		population = 100
-		result = algorithme_genetique.genetic(matrice, population, 0.1, iteration)
-		print('  Nombre d\'iterations : {}'.format(iteration))
-		print('  Ordre : {}'.format(result[0]))
-		print('  Makespan : {}'.format(result[1]))
-		end = time()
-		y.append(result[1])
-		print('  Temps d\'execution : {:.6}s'.format(end - start))
-		print()
 
-	plt.plot(x,y)
-	plt.xlabel('Test')
-	plt.ylabel('Makespan')
-	plt.show()
+path = './data/ta20_20.txt'
+matrice = dataReader.read(path, 20)
 
-path = './data/ta20_10.txt'
-matrice = dataReader.read(path, 10)
-varier_iteration()
+population_size = 100
+job_count = 20
+
+# Generer une les individus de la population aleatoirement
+initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
+
+print('Algorithme Hybride :')
+start = time()
+#result = genetic(matrice, initPop, 100, 0.1, 200, limit=2400)
+result = genetic_rt(matrice, initPop, 100, 0.1, 200, limit=2400)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
+end = time()
+print('  Temps d\'execution : {:.6}s'.format(end - start))
+'''
+print('Generation,Makespan')
+for i in range(len(x)):
+    print('{},{}'.format(x[i], y[i]))
+plt.plot(x,y)
+plt.xlabel('Generation')
+plt.ylabel('Makespan')
+plt.show()
+'''
+
+print('Algorithme Genetique :')
+start = time()
+result = genetic(matrice, initPop, 100, 0.1, 200, limit=2400)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
+end = time()
+print('  Temps d\'execution : {:.6}s'.format(end - start))
