@@ -2,24 +2,28 @@ from random import shuffle, randrange, sample, random
 from time import time
 from makespan import makespan
 import data as dataReader
+import matplotlib.pyplot as plt
 
-def genetic1(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 99999):
+# Stat
+x = [] # generation
+y = [] # makespan
+
+def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
     population_size = taille_population
     taux_mutation = taux_mut
-    #iterations = maxIterations
     job_count = len(data[0])
     print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
-    # Generer une les individus de la population aleatoirement
-    #population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
-
-    #population_avec_qualite = evaluer_qualite(population, data)    
     population_avec_qualite = evaluer_qualite(populationInitiale, data)
 
     score = 9999999
     iteration = 0
-    while score > limit and iteration < maxIterations:
+
+    repetitionSolution = 0
+    individuRepete = []
+    while repetitionSolution <= 20 and iteration < maxIterations:
         iteration += 1
+
         parents = choisir_parents(population_avec_qualite)
         enfants = croisement(parents)
         mutation(enfants, taux_mutation)
@@ -29,13 +33,20 @@ def genetic1(data, populationInitiale, taille_population = 100, taux_mut = 0.1, 
         if meilleurIndividu[1] < score:
             score = meilleurIndividu[1]
             print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+        if meilleurIndividu[0] == individuRepete:
+            repetitionSolution += 1
+        else:
+            repetitionSolution = 0
+            individuRepete = meilleurIndividu[0]
+
+        x.append(iteration)
+        y.append(score)
     print(iteration)
     return meilleurIndividu
 
-def genetic2(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 99999):
+def genetic_rt(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
     population_size = taille_population
     taux_mutation = taux_mut
-    #iterations = maxIterations
     job_count = len(data[0])
     print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
@@ -43,19 +54,29 @@ def genetic2(data, populationInitiale, taille_population = 100, taux_mut = 0.1, 
 
     score = 9999999
     iteration = 0
-    while score > limit and iteration < maxIterations:
+
+    repetitionSolution = 0
+    individuRepete = []
+    while repetitionSolution <= 20 and iteration < maxIterations:
         iteration += 1
+
         parents = choisir_parents(population_avec_qualite)
-        #print(parents[0])
         enfants = croisement(parents)
-        
-        mutationAvancee(enfants, taux_mutation, data)
+        mutation_rt(enfants, taux_mutation, data)
         population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
         meilleurIndividu = choisir_meilleur(population_avec_qualite)
 
         if meilleurIndividu[1] < score:
             score = meilleurIndividu[1]
             print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+        if meilleurIndividu[0] == individuRepete:
+            repetitionSolution += 1
+        else:
+            repetitionSolution = 0
+            individuRepete = meilleurIndividu[0]
+
+        x.append(iteration)
+        y.append(score)
     print(iteration)
     return meilleurIndividu
 
@@ -66,10 +87,8 @@ def evaluer_qualite(population, data):
 def choisir_parents(population):
     parents = []
     for _ in range(0, len(population)):
-        # Prendre un echantillon aleatoire de 5 individus
+        # Prendre un echantillon aleatoire
         echantillon = sample(population, 5)
-
-        # Choisir le meilleur des 5
         parents.append(choisir_meilleur(echantillon))
     return parents
 
@@ -90,24 +109,46 @@ def mutation(enfants, taux_mutation):
             tmp = enfant[left]
             enfant[left] = enfant[right]
             enfant[right] = tmp
-
             enfants[i] = enfant
 
-def mutationAvancee(enfants, taux_mutation, data):
+def mutation_rt(enfants, taux_mutation, data):
     for i in range(len(enfants)):
         enfant = enfants[i]
-        qualiteEnfant = makespan(enfant, data)
-        enfantTmp = enfant
-        for _ in range(5):
-            left = randrange(0, len(enfantTmp))
-            right = randrange(left, len(enfantTmp))
-            tmp = enfantTmp[left]
-            enfantTmp[left] = enfantTmp[right]
-            enfantTmp[right] = tmp
+        if random() <= taux_mutation:
+            left = randrange(0, len(enfant))
+            right = randrange(left, len(enfant))
+           
+            tmp = enfant[left]
+            enfant[left] = enfant[right]
+            enfant[right] = tmp
+            enfants[i] = enfant
+        else:
+            enfants[i] = amelioration_locale(enfant, data)
 
-        qualiteEnfant2 = makespan(enfantTmp, data)
-        if(qualiteEnfant2 < qualiteEnfant):
-            enfants[i] = enfantTmp
+def amelioration_locale(individu, data):
+    qualite_initiale = makespan(individu, data)
+    voisins = []
+    for _ in range(5):
+        voisin = swap(individu)
+        voisins.append((voisin, makespan(voisin, data)))
+
+    meilleurVoisin = choisir_meilleur(voisins)
+    
+    if(meilleurVoisin[1] < qualite_initiale):
+        individu = meilleurVoisin[0]
+    return individu
+
+
+def swap(individu):
+    resultat = individu[:]
+    i = randrange(len(individu))
+    j = randrange(len(individu))
+    tmp = resultat[i]
+    resultat[i] = resultat[j]
+    resultat[j] = tmp
+    return resultat
+
+
 
 def union(parents, enfants):
     both = parents + enfants
@@ -137,46 +178,38 @@ def merge(a, b):
     
     return [enfant1, enfant2]
 
-'''
-path = './data/ta20_5.txt'
-matrice = dataReader.read(path, 5)
-start = time()
-result = genetic(matrice, 100, 0.1, 100)
-print('  Ordre : {}'.format(result[0]))
-print('  Makespan : {}'.format(result[1]))
-end = time()
-print('  Temps d\'execution : {:.6}s'.format(end - start))
 
-path = './data/ta20_10.txt'
-matrice = dataReader.read(path, 10)
-start = time()
-result = genetic(matrice, 100, 0.1, 100)
-print('  Ordre : {}'.format(result[0]))
-print('  Makespan : {}'.format(result[1]))
-end = time()
-print('  Temps d\'execution : {:.6}s'.format(end - start))
-'''
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 
 population_size = 100
 job_count = 20
 
+# Generer une les individus de la population aleatoirement
 initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
 
+
 start = time()
-result = genetic2(matrice, initPop, 100, 0.3, 200, limit=2400)
+#result = genetic(matrice, initPop, 100, 0.1, 200, limit=2400)
+result = genetic_rt(matrice, initPop, 100, 0.1, 200, limit=2400)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
+'''
+print('Generation,Makespan')
+for i in range(len(x)):
+    print('{},{}'.format(x[i], y[i]))
+plt.plot(x,y)
+plt.xlabel('Generation')
+plt.ylabel('Makespan')
+plt.show()
+'''
 
-path = './data/ta20_20.txt'
-matrice = dataReader.read(path, 20)
+
 start = time()
-result = genetic1(matrice, initPop, 100, 0.3, 200, limit=2400)
+result = genetic(matrice, initPop, 100, 0.1, 200, limit=2400)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
-
