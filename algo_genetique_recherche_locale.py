@@ -8,42 +8,6 @@ import matplotlib.pyplot as plt
 x = [] # generation
 y = [] # makespan
 
-def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
-    population_size = taille_population
-    taux_mutation = taux_mut
-    job_count = len(data[0])
-    print('jobs = {}   machines = {} '.format(job_count, len(data)))
-
-    population_avec_qualite = evaluer_qualite(populationInitiale, data)
-
-    score = 9999999
-    iteration = 0
-
-    repetitionSolution = 0
-    individuRepete = []
-    while repetitionSolution <= 20 and iteration < maxIterations:
-        iteration += 1
-
-        parents = choisir_parents(population_avec_qualite)
-        enfants = croisement(parents)
-        mutation(enfants, taux_mutation)
-        population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
-        meilleurIndividu = choisir_meilleur(population_avec_qualite)
-
-        if meilleurIndividu[1] < score:
-            score = meilleurIndividu[1]
-            print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
-        if meilleurIndividu[0] == individuRepete:
-            repetitionSolution += 1
-        else:
-            repetitionSolution = 0
-            individuRepete = meilleurIndividu[0]
-
-        x.append(iteration)
-        y.append(score)
-    print(iteration)
-    return meilleurIndividu
-
 def genetic_rt(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
     population_size = taille_population
     taux_mutation = taux_mut
@@ -98,18 +62,6 @@ def croisement(parents):
     for i in range(1, len(parents), 2):
         enfants += merge(parents[i - 1][0], parents[i][0])
     return enfants
-
-def mutation(enfants, taux_mutation):
-    for i in range(len(enfants)):
-        enfant = enfants[i]
-        if random() <= taux_mutation:
-            left = randrange(0, len(enfant))
-            right = randrange(left, len(enfant))
-           
-            tmp = enfant[left]
-            enfant[left] = enfant[right]
-            enfant[right] = tmp
-            enfants[i] = enfant
 
 def mutation_rt(enfants, taux_mutation, data):
     for i in range(len(enfants)):
