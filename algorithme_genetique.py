@@ -3,24 +3,43 @@ from time import time
 from makespan import makespan
 import data as dataReader
 
-def genetic(data, taille_population = 100, taux_mut = 0.1, nIterations = 100):
+def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
     population_size = taille_population
     taux_mutation = taux_mut
-    iterations = nIterations
     job_count = len(data[0])
     print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
-    # Generer une les individus de la population aleatoirement
-    population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
+    
+    #population = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
 
-    population_avec_qualite = evaluer_qualite(population, data)    
+    #population_avec_qualite = evaluer_qualite(population, data)    
+    population_avec_qualite = evaluer_qualite(populationInitiale, data)
 
-    for _ in range(0, iterations):
+    score = 9999999
+    iteration = 0
+
+    repetitionSolution = 0
+    individuRepete = []
+    while repetitionSolution <= 20 and iteration < maxIterations:
+        iteration += 1
         parents = choisir_parents(population_avec_qualite)
         enfants = croisement(parents)
         mutation(enfants, taux_mutation)
         population_avec_qualite = union(population_avec_qualite, evaluer_qualite(enfants, data))
-    return choisir_meilleur(population_avec_qualite)
+        meilleurIndividu = choisir_meilleur(population_avec_qualite)
+
+        if meilleurIndividu[1] < score:
+            score = meilleurIndividu[1]
+            print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+        if meilleurIndividu[0] == individuRepete:
+            repetitionSolution += 1
+        else:
+            repetitionSolution = 0
+            individuRepete = meilleurIndividu[0]
+            print(' new best')
+    print(iteration)
+    return meilleurIndividu
+
 
 def evaluer_qualite(population, data):
     return [(individual, makespan(individual, data)) for individual in population]
@@ -79,7 +98,22 @@ def merge(a, b):
     return [enfant1, enfant2]
 
 
+path = './data/ta20_20.txt'
+matrice = dataReader.read(path, 20)
 
+population_size = 100
+job_count = 20
+
+# Generer une les individus de la population aleatoirement
+initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
+
+start = time()
+result = genetic(matrice, initPop, 100, 0.3, 200, limit=2400)
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
+end = time()
+print('  Temps d\'execution : {:.6}s'.format(end - start))
+'''
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 start = time()
@@ -88,6 +122,7 @@ print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
 print('  Temps d\'execution : {:.6}s'.format(end - start))
+'''
 
 '''
 
