@@ -4,15 +4,12 @@ from makespan import makespan
 import data as dataReader
 import matplotlib.pyplot as plt
 
-# Stat
-x = [] # generation
-y = [] # makespan
 
 def genetic_rt(data, populationInitiale, taille_population = 100, taux_mut = 0.1, maxIterations = 1000, limit = 0):
     population_size = taille_population
     taux_mutation = taux_mut
     job_count = len(data[0])
-    print('jobs = {}   machines = {} '.format(job_count, len(data)))
+    #print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
     population_avec_qualite = evaluer_qualite(populationInitiale, data)
 
@@ -21,7 +18,7 @@ def genetic_rt(data, populationInitiale, taille_population = 100, taux_mut = 0.1
 
     repetitionSolution = 0
     individuRepete = []
-    while repetitionSolution <= 20 and iteration < maxIterations:
+    while repetitionSolution <= 10 and iteration < maxIterations:
         iteration += 1
 
         parents = choisir_parents(population_avec_qualite)
@@ -32,18 +29,14 @@ def genetic_rt(data, populationInitiale, taille_population = 100, taux_mut = 0.1
 
         if meilleurIndividu[1] < score:
             score = meilleurIndividu[1]
-            print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+            #print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
         if meilleurIndividu[0] == individuRepete:
             repetitionSolution += 1
         else:
             repetitionSolution = 0
             individuRepete = meilleurIndividu[0]
 
-        x.append(iteration)
-        y.append(score)
-    print(iteration)
-    return meilleurIndividu
-
+    return (meilleurIndividu[0], meilleurIndividu[1], iteration)
 
 def evaluer_qualite(population, data):
     return [(individual, makespan(individual, data)) for individual in population]
@@ -67,6 +60,8 @@ def mutation_rt(enfants, taux_mutation, data):
     for i in range(len(enfants)):
         enfant = enfants[i]
         if random() <= taux_mutation:
+            enfants[i] = amelioration_locale(enfant, data)
+            '''
             left = randrange(0, len(enfant))
             right = randrange(left, len(enfant))
            
@@ -74,8 +69,9 @@ def mutation_rt(enfants, taux_mutation, data):
             enfant[left] = enfant[right]
             enfant[right] = tmp
             enfants[i] = enfant
-        else:
-            enfants[i] = amelioration_locale(enfant, data)
+            '''
+        #else:
+            #enfants[i] = amelioration_locale(enfant, data)
 
 def amelioration_locale(individu, data):
     qualite_initiale = makespan(individu, data)

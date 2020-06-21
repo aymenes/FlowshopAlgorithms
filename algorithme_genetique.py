@@ -12,7 +12,7 @@ def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, m
     population_size = taille_population
     taux_mutation = taux_mut
     job_count = len(data[0])
-    print('jobs = {}   machines = {} '.format(job_count, len(data)))
+    #print('jobs = {}   machines = {} '.format(job_count, len(data)))
 
     population_avec_qualite = evaluer_qualite(populationInitiale, data)
 
@@ -32,17 +32,14 @@ def genetic(data, populationInitiale, taille_population = 100, taux_mut = 0.1, m
 
         if meilleurIndividu[1] < score:
             score = meilleurIndividu[1]
-            print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
+            #print('new : {} makespan = {}'.format(meilleurIndividu[0], meilleurIndividu[1]))
         if meilleurIndividu[0] == individuRepete:
             repetitionSolution += 1
         else:
             repetitionSolution = 0
             individuRepete = meilleurIndividu[0]
 
-        x.append(iteration)
-        y.append(score)
-    print(iteration)
-    return meilleurIndividu
+    return (meilleurIndividu[0], meilleurIndividu[1], iteration)
 
 
 def evaluer_qualite(population, data):
