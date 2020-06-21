@@ -1,5 +1,6 @@
 from data import read
 import numpy as np
+from makespan import makespan
 
 def _calc_makespan(jobMatrix, jobOrder):
     nb_machine, _ = jobMatrix.shape
@@ -23,11 +24,45 @@ def neh(jobMatrix):
             candidate = order[:i] + [job[0]] + order[i:]
             candidates.append((candidate, _calc_makespan(jobMatrix,candidate)))
         order = min(candidates, key = lambda x: x[1])[0]
+    print(makespan(order, jobMatrix))
+    print(_calc_makespan(jobMatrix, order))
     return order
 
+
+path = './data/ta20_5.txt'
+M = read(path, 5)
+print(type(M))
+
+M = [
+    [1, 2, 6, 3],
+    [8, 4, 2, 9],
+    [4, 5, 8, 2]
+]
+M = np.array(M)
+
+nb_machines, nb_jobs = M.shape
+print("we have "+str(nb_machines) + " machines each one must do " + str(nb_jobs) + " jobs")
+res = neh(M)
+print(res)
+
+M = [
+    [1, 1, 4],
+    [1, 4, 1],
+    [3, 3, 1],
+    [2, 3, 3],
+]
+M = np.array(M)
+nb_machines, nb_jobs = M.shape
+print("we have "+str(nb_machines) + " machines each one must do " + str(nb_jobs) + " jobs")
+res = neh(M)
+print(res)
+
+
+'''
 if __name__ == '__main__':
     path = './data/ta20_5.txt'
     M = read(path)
     nb_machines, nb_jobs = M.shape
     print("we have "+str(nb_machines) + " machines each one must do " + str(nb_jobs) + " jobs")
     neh(M)
+'''

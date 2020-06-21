@@ -1,5 +1,6 @@
 from algorithme_genetique import genetic
 from algo_genetique_recherche_locale import genetic_rt
+from neh import neh
 #import algorithme_genetique, algo_genetique_recherche_locale
 import data as dataReader
 import matplotlib.pyplot as plt
@@ -22,7 +23,7 @@ makespanHY = []
 nbIterAG = []
 nbIterHY = []
 
-for _ in range(20):
+for _ in range(1):
 
 	# Generer une les individus de la population aleatoirement
 	initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
