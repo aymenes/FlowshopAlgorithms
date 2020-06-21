@@ -1,11 +1,12 @@
 from algorithme_genetique import genetic
 from algo_genetique_recherche_locale import genetic_rt
 from neh import neh
+from makespan import makespan
+
 import data as dataReader
 import matplotlib.pyplot as plt
 from random import shuffle, randrange, sample, random
 from time import time
-from makespan import makespan
 import numpy as np
 
 path = './data/ta20_20.txt'
@@ -15,7 +16,6 @@ matrice = dataReader.read(path, 20)
 
 matrice = np.array(matrice)
 machine_count, job_count = matrice.shape
-
 
 print('Algorithme NEH :')
 start = time()
@@ -33,7 +33,7 @@ initPop = [sample(list(range(0, job_count)), job_count) for _ in range(0, popula
 
 print('Algorithme Hybride :')
 start = time()
-result = genetic_rt(matrice, initPop, population_size, 0.1, 200, limit=2400)
+result = genetic_rt(matrice, initPop, population_size, 0.1, 200)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
@@ -41,7 +41,7 @@ print('  Temps d\'execution : {:.6}s'.format(end - start))
 
 print('Algorithme Genetique :')
 start = time()
-result = genetic(matrice, initPop, population_size, 0.1, 200, limit=2400)
+result = genetic(matrice, initPop, population_size, 0.1, 200)
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 end = time()
