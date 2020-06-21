@@ -7,15 +7,19 @@ import matplotlib.pyplot as plt
 from random import shuffle, randrange, sample, random
 from time import time
 from makespan import makespan
+import numpy as np
 
 
 path = './data/ta20_20.txt'
 matrice = dataReader.read(path, 20)
 
+matrice = np.array(matrice)
+
 population_size = 100
 job_count = 20
 
-x = [x for x in range(1, 21)]
+# for stat
+x = [x for x in range(1, 6)]
 tempsAG = []
 tempsHY = []
 makespanAG = []
@@ -25,8 +29,13 @@ nbIterHY = []
 
 for _ in range(1):
 
+	print('Algorithme NEH :')
+	res = neh(matrice)
+	print(res)
+
 	# Generer une les individus de la population aleatoirement
-	initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
+	#initPop = [sample(list(range(1, job_count + 1)), job_count) for _ in range(0, population_size)] # same repeated individual
+	initPop = [sample(list(range(0, job_count)), job_count) for _ in range(0, population_size)] # same repeated individual
 
 	print('Algorithme Hybride :')
 	start = time()
