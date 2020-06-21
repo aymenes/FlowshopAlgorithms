@@ -1,6 +1,7 @@
 from algorithme_genetique import genetic
 from algo_genetique_recherche_locale import genetic_rt
 from neh import neh
+from cds import CDS
 from makespan import makespan
 
 import data as dataReader
@@ -17,6 +18,15 @@ matrice = dataReader.read(path, 20)
 matrice = np.array(matrice)
 machine_count, job_count = matrice.shape
 
+print('Algorithme CDS :')
+start = time()
+result = CDS(matrice)
+end = time()
+print('  Ordre : {}'.format(result[0]))
+print('  Makespan : {}'.format(result[1]))
+print('  Temps d\'execution : {:.6}s'.format(end - start))
+
+
 print('Algorithme NEH :')
 start = time()
 result = neh(matrice)
@@ -24,7 +34,6 @@ end = time()
 print('  Ordre : {}'.format(result[0]))
 print('  Makespan : {}'.format(result[1]))
 print('  Temps d\'execution : {:.6}s'.format(end - start))
-
 
 # Taille de la population pour les algorithmes hybrides
 population_size = 50
